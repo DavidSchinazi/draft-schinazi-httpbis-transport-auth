@@ -33,43 +33,36 @@ author:
     code: 94043
     country: United States of America
     email: dschinazi.ietf@gmail.com
-
+normative:
+  HTTP: RFC9110
 
 --- abstract
 
-The most common existing authentication mechanisms for HTTP are sent with each
-HTTP request, and authenticate that request instead of the underlying HTTP
-connection, or transport. While these mechanisms work well for existing uses
-of HTTP, they are not suitable for emerging applications that multiplex
-non-HTTP traffic inside an HTTP connection. This document describes the HTTP
-Transport Authentication Framework, a method of authenticating not only an
-HTTP request, but also its underlying transport.
-
+Existing HTTP authentication mechanisms are probeable in the sense that it is
+possible for an unauthenticated client to probe whether an origin serves
+resources that require authentication. It is possible for an origin to hide the
+fact that it requires authentication by not generating Unauthorized status
+codes, however that only works with non-cryptographic authentication schemes:
+cryptographic schemes (such as signatures or message authentication codes)
+require a fresh nonce to be signed, and there is no existing way for the origin
+to share such a nonce without exposing the fact that they serve resources that
+require authentication. This document proposes a new non-probeable cryptographic
+authentication scheme.
 
 --- middle
 
 # Introduction {#introduction}
 
-The most common existing authentication mechanisms for HTTP are sent with each
-HTTP request, and authenticate that request instead of the underlying HTTP
-connection, or transport. While these mechanisms work well for existing uses
-of HTTP, they are not suitable for emerging applications that multiplex
-non-HTTP traffic inside an HTTP connection. This document describes the HTTP
-Transport Authentication Framework, a method of authenticating not only an
-HTTP request, but also its underlying transport.
-
-Traditional HTTP semantics specify that HTTP is a stateless protocol where
-each request can be understood in isolation {{!RFC7230}}. However, the
-emergence of QUIC {{?QUIC=I-D.ietf-quic-transport}} as a new transport
-protocol that can carry HTTP {{?HTTP3=I-D.ietf-quic-http}} and the existence
-of QUIC extensions such as the DATAGRAM frame {{?DGRAM=I-D.ietf-quic-datagram}}
-enable new uses of HTTP such as {{?WEBTRANS-H=I-D.vvv-webtransport-http3}} and
-{{?MASQUE=I-D.schinazi-masque-protocol}} where some traffic is exchanged that
-is disctinct from HTTP requests and responses. In order to authenticate this
-traffic, it is necessary to authenticate the underlying transport (e.g., QUIC
-or TLS {{!RFC8446}}) instead of authenticate each request individually. This
-mechanism aims to supplement the HTTP Authentication Framework {{?RFC7235}},
-not replace it.
+Existing HTTP authentication mechanisms are probeable in the sense that it is
+possible for an unauthenticated client to probe whether an origin serves
+resources that require authentication. It is possible for an origin to hide the
+fact that it requires authentication by not generating Unauthorized status
+codes, however that only works with non-cryptographic authentication schemes:
+cryptographic schemes (such as signatures or message authentication codes)
+require a fresh nonce to be signed, and there is no existing way for the origin
+to share such a nonce without exposing the fact that they serve resources that
+require authentication. This document proposes a new non-probeable cryptographic
+authentication scheme.
 
 Note that there is currently no mechanism for origin servers to request
 that user agents authenticate themselves using Transport Authentication,
@@ -78,22 +71,18 @@ this is left as future work.
 
 ## Conventions and Definitions {#conventions}
 
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
-"SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this
-document are to be interpreted as described in BCP 14 {{!RFC2119}} {{!RFC8174}}
-when, and only when, they appear in all capitals, as shown here.
+{::boilerplate bcp14-tagged}
 
-This document uses the Augmented BNF defined in {{!RFC5234}} and updated by
-{{!RFC7405}} along with the "#rule" extension defined in Section 7 of
-{{!RFC7230}}. The rules below are defined in {{!RFC3061}}, {{!RFC5234}},
-{{!RFC7230}}, and {{!RFC7235}}:
+This document uses the Augmented BNF defined in {{!ABNF=RFC5234}} and updated by
+{{!ABNF2=RFC7405}} along with the "#rule" extension defined in {{Section 5.6.1
+of HTTP}}. The rules below are defined in {{HTTP}} and {{!OID=RFC3061}}.
 
 ~~~
-  OWS           = <OWS, see {{!RFC7230}}, Section 3.2.3>
-  quoted-string = <quoted-string, see {{!RFC7230}}, Section 3.2.6>
-  token         = <token, see {{!RFC7230}}, Section 3.2.6>
-  token68       = <token, see {{!RFC7235}}, Section 2.1>
-  oid           = <oid, see {{!RFC3061}}, Section 2>
+  OWS           = <OWS, see {{Section 5.6.3 of HTTP}}>
+  quoted-string = <quoted-string, see {{Section 5.6.4 of HTTP}}>
+  token         = <token, see {{Section 5.6.2 of HTTP}}>
+  token68       = <token68, see {{Section 5.6.3 of HTTP}}>
+  oid           = <oid, see {{Section 2 of OID}}>
 ~~~
 
 
@@ -102,14 +91,14 @@ This document uses the Augmented BNF defined in {{!RFC5234}} and updated by
 This document only defines Transport Authentication for uses of HTTP with TLS.
 This includes any use of HTTP over TLS as typically used for HTTP/2, or
 HTTP/3 where the transport protocol uses TLS as its authentication and key
-exchange mechanism {{?QUIC-TLS=I-D.ietf-quic-tls}}.
+exchange mechanism {{?QUIC-TLS=RFC9001}}.
 
-The user agent leverages a TLS keying material exporter {{!RFC5705}} to
-generate a nonce which can be signed using the user-id's key. The keying
+The user agent leverages a TLS keying material exporter {{!KEY-EXPORT=RFC5705}}
+to generate a nonce which can be signed using the user-id's key. The keying
 material exporter uses a label that starts with the characters
-"EXPORTER-HTTP-Transport-Authentication-" (see {{schemes}} for the labels
-and contexts used by each scheme). The TLS keying material exporter is
-used to generate a 32-byte key which is then used as a nonce.
+"EXPORTER-HTTP-Transport-Authentication-" (see {{schemes}} for the labels and
+contexts used by each scheme). The TLS keying material exporter is used to
+generate a 32-byte key which is then used as a nonce.
 
 
 # Header Field Definition {#header-definition}
@@ -128,7 +117,7 @@ its transport connection with an origin server.
 
 The OPTIONAL "u" (user-id) directive specifies the user-id that the user
 agent wishes to authenticate. It is encoded using
-Base64 (Section 4 of {{!RFC4648}}).
+Base64 ({{Section 4 of !BASE64=RFC4648}}).
 
 ~~~
     u = token68
@@ -139,7 +128,7 @@ Base64 (Section 4 of {{!RFC4648}}).
 
 The OPTIONAL "p" (proof) directive specifies the proof that the user agent
 provides to attest to possessing the credential that matches its user-id.
-It is encoded using Base64 (Section 4 of {{!RFC4648}}).
+It is encoded using Base64 ({{Section 4 of BASE64}}).
 
 ~~~
     p = token68
@@ -174,8 +163,9 @@ The TLS keying material export label for this scheme is
 context is empty. The nonce is then signed using the selected asymmetric
 signature algorithm and transmitted as the proof directive.
 
-For example, the user-id "john.doe" authenticating using Ed25519 {{?RFC8410}}
-could produce the following header (lines are folded to fit):
+For example, the user-id "john.doe" authenticating using Ed25519
+{{?ED25519=RFC8410}} could produce the following header (lines are folded to
+fit):
 
 ~~~
 Transport-Authentication: Signature u="am9obi5kb2U=";
@@ -197,7 +187,7 @@ context is empty. The nonce is then HMACed using the selected HMAC algorithm
 and transmitted as the proof directive.
 
 For example, the user-id "john.doe" authenticating using
-HMAC-SHA-512 {{?RFC6234}} could produce the following
+HMAC-SHA-512 {{?SHA=RFC6234}} could produce the following
 header (lines are folded to fit):
 
 ~~~
@@ -208,13 +198,13 @@ cyA1MTIgYml0cyBmb3IgU0hBLTUxMiEhISEhIQ=="
 ~~~
 
 
-# Proxy Considerations {#proxy}
+# Intermediary Considerations {#intermediary}
 
 Since Transport Authentication authenticates the underlying transport by
-leveraging TLS keying material exporters, it cannot be transparently
-forwarded by proxies that terminate TLS. However it can be sent over
-proxied connections when TLS is performed end-to-end (e.g., when using
-HTTP CONNECT proxies).
+leveraging TLS keying material exporters, it cannot be transparently forwarded
+by HTTP intermediaries. HTTP intermediaries that support this specification will
+validate the authentication received from the client themselves, then let the
+upstream HTTP server using some other mechanism.
 
 
 # Security Considerations {#security}
@@ -230,38 +220,44 @@ clear-text TLS Client Hello extensions.
 
 # IANA Considerations {#iana}
 
-
 ## Transport-Authentication Header Field {#iana-header}
 
-This document, if approved, requests IANA to register the
-"Transport-Authentication" header in the "Permanent Message Header Field Names"
-registry maintained at
-<https://www.iana.org/assignments/message-headers/>.
+This document will request IANA to register the following entry in the "HTTP
+Field Name" registry maintained at
+<[](https://www.iana.org/assignments/http-fields)>:
 
-~~~
-  +--------------------------+----------+--------+---------------+
-  |    Header Field Name     | Protocol | Status |   Reference   |
-  +--------------------------+----------+--------+---------------+
-  | Transport-Authentication |   http   |  exp   | This document |
-  +--------------------------+----------+--------+---------------+
-~~~
+Field Name:
+: Transport-Authentication
+
+Template:
+: None
+
+Status:
+: provisional (permanent if this document is approved)
+
+Reference:
+: This document
+
+Comments:
+
+: None
+{: spacing="compact"}
 
 
 ## Transport Authentication Schemes Registry {#iana-schemes}
 
-This document, if approved, requests IANA to create a new HTTP Transport
-Authentication Schemes Registry with the following entries:
+This document, if approved, requests IANA to create a new "HTTP Transport
+Authentication Schemes" Registry. This new registry contains strings and is
+covered by the First Come First Served policy from {{Section 4.4 of
+!IANA-POLICY=RFC8126}}. Each entry contains an optional "Reference" field.
 
-~~~
-  +---------------------------------+---------------+
-  | Transport Authentication Scheme |   Reference   |
-  +---------------------------------+---------------+
-  |            Signature            | This document |
-  +---------------------------------+---------------+
-  |              HMAC               | This document |
-  +---------------------------------+---------------+
-~~~
+It initially contains the following entries:
 
+* Signature
+
+* HMAC
+
+The reference for both is this document.
 
 ## TLS Keying Material Exporter Labels {#iana-exporter-label}
 
@@ -269,25 +265,24 @@ This document, if approved, requests IANA to register the following entries in
 the "TLS Exporter Labels" registry maintained at
 <https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml#exporter-labels>
 
-~~~
-  +--------------------------------------------------+
-  |                       Value                      |
-  +--------------------------------------------------+
-  | EXPORTER-HTTP-Transport-Authentication-Signature |
-  +--------------------------------------------------+
-  | EXPORTER-HTTP-Transport-Authentication-HMAC      |
-  +--------------------------------------------------+
-~~~
+* EXPORTER-HTTP-Transport-Authentication-Signature
+
+* EXPORTER-HTTP-Transport-Authentication-HMAC
 
 Both of these entries are listed with the following qualifiers:
 
-~~~
-  +---------+-------------+---------------+
-  | DTLS-OK | Recommended |   Reference   |
-  +---------+-------------+---------------+
-  |    N    |      Y      | This document |
-  +---------+-------------+---------------+
-~~~
+DTLS-OK:
+
+: N
+
+Recommended:
+
+: Y
+
+Reference:
+
+: This document
+{: spacing="compact"}
 
 --- back
 
@@ -297,6 +292,6 @@ Both of these entries are listed with the following qualifiers:
 The authors would like to thank many members of the IETF community, as this
 document is the fruit of many hallway conversations. Using the OID for the
 signature and HMAC algorithms was inspired by Signature Authentication in
-IKEv2 {{?RFC7427}}.
+IKEv2.
 
 
