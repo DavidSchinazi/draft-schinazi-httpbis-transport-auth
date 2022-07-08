@@ -9,9 +9,9 @@ consensus: true
 v: 3
 category: exp
 wg: HTTPBIS
-area: Applications
+area: "Applications and Real-Time"
 venue:
-  group: "HTTPBIS"
+  group: "HTTP"
   type: "Working Group"
   mail: "ietf-http-wg@w3.org"
   arch: "https://lists.w3.org/Archives/Public/ietf-http-wg/"
