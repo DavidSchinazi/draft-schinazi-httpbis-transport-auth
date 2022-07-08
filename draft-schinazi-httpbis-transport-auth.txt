@@ -13,14 +13,17 @@ Expires: 9 January 2023
 
 Abstract
 
-   The most common existing authentication mechanisms for HTTP are sent
-   with each HTTP request, and authenticate that request instead of the
-   underlying HTTP connection, or transport.  While these mechanisms
-   work well for existing uses of HTTP, they are not suitable for
-   emerging applications that multiplex non-HTTP traffic inside an HTTP
-   connection.  This document describes the HTTP Transport
-   Authentication Framework, a method of authenticating not only an HTTP
-   request, but also its underlying transport.
+   Existing HTTP authentication mechanisms are probeable in the sense
+   that it is possible for an unauthenticated client to probe whether an
+   origin serves resources that require authentication.  It is possible
+   for an origin to hide the fact that it requires authentication by not
+   generating Unauthorized status codes, however that only works with
+   non-cryptographic authentication schemes: cryptographic schemes (such
+   as signatures or message authentication codes) require a fresh nonce
+   to be signed, and there is no existing way for the origin to share
+   such a nonce without exposing the fact that they serve resources that
+   require authentication.  This document proposes a new non-probeable
+   cryptographic authentication scheme.
 
 About This Document
 
@@ -83,7 +86,7 @@ Table of Contents
    4.  Transport Authentication Schemes
      4.1.  Signature
      4.2.  HMAC
-   5.  Proxy Considerations
+   5.  Intermediary Considerations
    6.  Security Considerations
    7.  IANA Considerations
      7.1.  Transport-Authentication Header Field
@@ -97,26 +100,17 @@ Table of Contents
 
 1.  Introduction
 
-   The most common existing authentication mechanisms for HTTP are sent
-   with each HTTP request, and authenticate that request instead of the
-   underlying HTTP connection, or transport.  While these mechanisms
-   work well for existing uses of HTTP, they are not suitable for
-   emerging applications that multiplex non-HTTP traffic inside an HTTP
-   connection.  This document describes the HTTP Transport
-   Authentication Framework, a method of authenticating not only an HTTP
-   request, but also its underlying transport.
-
-   Traditional HTTP semantics specify that HTTP is a stateless protocol
-   where each request can be understood in isolation [RFC7230].
-   However, the emergence of QUIC [QUIC] as a new transport protocol
-   that can carry HTTP [HTTP3] and the existence of QUIC extensions such
-   as the DATAGRAM frame [DGRAM] enable new uses of HTTP such as
-   [WEBTRANS-H] and [MASQUE] where some traffic is exchanged that is
-   disctinct from HTTP requests and responses.  In order to authenticate
-   this traffic, it is necessary to authenticate the underlying
-   transport (e.g., QUIC or TLS [RFC8446]) instead of authenticate each
-   request individually.  This mechanism aims to supplement the HTTP
-   Authentication Framework [RFC7235], not replace it.
+   Existing HTTP authentication mechanisms are probeable in the sense
+   that it is possible for an unauthenticated client to probe whether an
+   origin serves resources that require authentication.  It is possible
+   for an origin to hide the fact that it requires authentication by not
+   generating Unauthorized status codes, however that only works with
+   non-cryptographic authentication schemes: cryptographic schemes (such
+   as signatures or message authentication codes) require a fresh nonce
+   to be signed, and there is no existing way for the origin to share
+   such a nonce without exposing the fact that they serve resources that
+   require authentication.  This document proposes a new non-probeable
+   cryptographic authentication scheme.
 
    Note that there is currently no mechanism for origin servers to
    request that user agents authenticate themselves using Transport
@@ -126,20 +120,19 @@ Table of Contents
 
    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
    "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
-   "OPTIONAL" in this document are to be interpreted as described in BCP
-   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   "OPTIONAL" in this document are to be interpreted as described in
+   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
    capitals, as shown here.
 
-   This document uses the Augmented BNF defined in [RFC5234] and updated
-   by [RFC7405] along with the "#rule" extension defined in Section 7 of
-   [RFC7230].  The rules below are defined in [RFC3061], [RFC5234],
-   [RFC7230], and [RFC7235]:
+   This document uses the Augmented BNF defined in [ABNF] and updated by
+   [ABNF2] along with the "#rule" extension defined in Section 5.6.1 of
+   [HTTP].  The rules below are defined in [HTTP] and [OID].
 
-     OWS           = <OWS, see {{RFC7230}}, Section 3.2.3>
-     quoted-string = <quoted-string, see {{RFC7230}}, Section 3.2.6>
-     token         = <token, see {{RFC7230}}, Section 3.2.6>
-     token68       = <token, see {{RFC7235}}, Section 2.1>
-     oid           = <oid, see {{RFC3061}}, Section 2>
+     OWS           = <OWS, see {{Section 5.6.3 of HTTP}}>
+     quoted-string = <quoted-string, see {{Section 5.6.4 of HTTP}}>
+     token         = <token, see {{Section 5.6.2 of HTTP}}>
+     token68       = <token68, see {{Section 5.6.3 of HTTP}}>
+     oid           = <oid, see {{Section 2 of OID}}>
 
 2.  Computing the Authentication Proof
 
@@ -148,8 +141,8 @@ Table of Contents
    for HTTP/2, or HTTP/3 where the transport protocol uses TLS as its
    authentication and key exchange mechanism [QUIC-TLS].
 
-   The user agent leverages a TLS keying material exporter [RFC5705] to
-   generate a nonce which can be signed using the user-id's key.  The
+   The user agent leverages a TLS keying material exporter [KEY-EXPORT]
+   to generate a nonce which can be signed using the user-id's key.  The
    keying material exporter uses a label that starts with the characters
    "EXPORTER-HTTP-Transport-Authentication-" (see Section 4 for the
    labels and contexts used by each scheme).  The TLS keying material
@@ -169,7 +162,7 @@ Table of Contents
 
    The OPTIONAL "u" (user-id) directive specifies the user-id that the
    user agent wishes to authenticate.  It is encoded using Base64
-   (Section 4 of [RFC4648]).
+   (Section 4 of [BASE64]).
 
        u = token68
 
@@ -177,7 +170,7 @@ Table of Contents
 
    The OPTIONAL "p" (proof) directive specifies the proof that the user
    agent provides to attest to possessing the credential that matches
-   its user-id.  It is encoded using Base64 (Section 4 of [RFC4648]).
+   its user-id.  It is encoded using Base64 (Section 4 of [BASE64]).
 
        p = token68
 
@@ -207,7 +200,7 @@ Table of Contents
    transmitted as the proof directive.
 
    For example, the user-id "john.doe" authenticating using Ed25519
-   [RFC8410] could produce the following header (lines are folded to
+   [ED25519] could produce the following header (lines are folded to
    fit):
 
    Transport-Authentication: Signature u="am9obi5kb2U=";
@@ -227,21 +220,21 @@ Table of Contents
    selected HMAC algorithm and transmitted as the proof directive.
 
    For example, the user-id "john.doe" authenticating using HMAC-SHA-512
-   [RFC6234] could produce the following header (lines are folded to
-   fit):
+   [SHA] could produce the following header (lines are folded to fit):
 
    Transport-Authentication: HMAC u="am9obi5kb2U=";
    a=2.16.840.1.101.3.4.2.3;
    p="SW5zZXJ0IEhNQUMgb2Ygbm9uY2UgaGVyZSB3aGljaCB0YWtl
    cyA1MTIgYml0cyBmb3IgU0hBLTUxMiEhISEhIQ=="
 
-5.  Proxy Considerations
+5.  Intermediary Considerations
 
    Since Transport Authentication authenticates the underlying transport
    by leveraging TLS keying material exporters, it cannot be
-   transparently forwarded by proxies that terminate TLS.  However it
-   can be sent over proxied connections when TLS is performed end-to-end
-   (e.g., when using HTTP CONNECT proxies).
+   transparently forwarded by HTTP intermediaries.  HTTP intermediaries
+   that support this specification will validate the authentication
+   received from the client themselves, then let the upstream HTTP
+   server using some other mechanism.
 
 6.  Security Considerations
 
@@ -258,29 +251,31 @@ Table of Contents
 
 7.1.  Transport-Authentication Header Field
 
-   This document, if approved, requests IANA to register the "Transport-
-   Authentication" header in the "Permanent Message Header Field Names"
-   registry maintained at https://www.iana.org/assignments/message-
-   headers/ (https://www.iana.org/assignments/message-headers/).
+   This document will request IANA to register the following entry in
+   the "HTTP Field Name" registry maintained at
+   <https://www.iana.org/assignments/http-fields>:
 
-     +--------------------------+----------+--------+---------------+
-     |    Header Field Name     | Protocol | Status |   Reference   |
-     +--------------------------+----------+--------+---------------+
-     | Transport-Authentication |   http   |  exp   | This document |
-     +--------------------------+----------+--------+---------------+
+   Field Name:  Transport-Authentication
+   Template:  None
+   Status:  provisional (permanent if this document is approved)
+   Reference:  This document
+   Comments:  None
 
 7.2.  Transport Authentication Schemes Registry
 
-   This document, if approved, requests IANA to create a new HTTP
-   Transport Authentication Schemes Registry with the following entries:
+   This document, if approved, requests IANA to create a new "HTTP
+   Transport Authentication Schemes" Registry.  This new registry
+   contains strings and is covered by the First Come First Served policy
+   from Section 4.4 of [IANA-POLICY].  Each entry contains an optional
+   "Reference" field.
 
-     +---------------------------------+---------------+
-     | Transport Authentication Scheme |   Reference   |
-     +---------------------------------+---------------+
-     |            Signature            | This document |
-     +---------------------------------+---------------+
-     |              HMAC               | This document |
-     +---------------------------------+---------------+
+   It initially contains the following entries:
+
+   *  Signature
+
+   *  HMAC
+
+   The reference for both is this document.
 
 7.3.  TLS Keying Material Exporter Labels
 
@@ -290,127 +285,85 @@ Table of Contents
    parameters.xhtml#exporter-labels (https://www.iana.org/assignments/
    tls-parameters/tls-parameters.xhtml#exporter-labels)
 
-     +--------------------------------------------------+
-     |                       Value                      |
-     +--------------------------------------------------+
-     | EXPORTER-HTTP-Transport-Authentication-Signature |
-     +--------------------------------------------------+
-     | EXPORTER-HTTP-Transport-Authentication-HMAC      |
-     +--------------------------------------------------+
+   *  EXPORTER-HTTP-Transport-Authentication-Signature
+
+   *  EXPORTER-HTTP-Transport-Authentication-HMAC
 
    Both of these entries are listed with the following qualifiers:
 
-     +---------+-------------+---------------+
-     | DTLS-OK | Recommended |   Reference   |
-     +---------+-------------+---------------+
-     |    N    |      Y      | This document |
-     +---------+-------------+---------------+
+   DTLS-OK:  N
+   Recommended:  Y
+   Reference:  This document
 
 8.  References
 
 8.1.  Normative References
+
+   [ABNF]     Crocker, D., Ed. and P. Overell, "Augmented BNF for Syntax
+              Specifications: ABNF", STD 68, RFC 5234,
+              DOI 10.17487/RFC5234, January 2008,
+              <https://www.rfc-editor.org/rfc/rfc5234>.
+
+   [ABNF2]    Kyzivat, P., "Case-Sensitive String Support in ABNF",
+              RFC 7405, DOI 10.17487/RFC7405, December 2014,
+              <https://www.rfc-editor.org/rfc/rfc7405>.
+
+   [BASE64]   Josefsson, S., "The Base16, Base32, and Base64 Data
+              Encodings", RFC 4648, DOI 10.17487/RFC4648, October 2006,
+              <https://www.rfc-editor.org/rfc/rfc4648>.
+
+   [HTTP]     Fielding, R., Ed., Nottingham, M., Ed., and J. Reschke,
+              Ed., "HTTP Semantics", STD 97, RFC 9110,
+              DOI 10.17487/RFC9110, June 2022,
+              <https://www.rfc-editor.org/rfc/rfc9110>.
+
+   [IANA-POLICY]
+              Cotton, M., Leiba, B., and T. Narten, "Guidelines for
+              Writing an IANA Considerations Section in RFCs", BCP 26,
+              RFC 8126, DOI 10.17487/RFC8126, June 2017,
+              <https://www.rfc-editor.org/rfc/rfc8126>.
+
+   [KEY-EXPORT]
+              Rescorla, E., "Keying Material Exporters for Transport
+              Layer Security (TLS)", RFC 5705, DOI 10.17487/RFC5705,
+              March 2010, <https://www.rfc-editor.org/rfc/rfc5705>.
+
+   [OID]      Mealling, M., "A URN Namespace of Object Identifiers",
+              RFC 3061, DOI 10.17487/RFC3061, February 2001,
+              <https://www.rfc-editor.org/rfc/rfc3061>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/rfc/rfc2119>.
 
-   [RFC3061]  Mealling, M., "A URN Namespace of Object Identifiers",
-              RFC 3061, DOI 10.17487/RFC3061, February 2001,
-              <https://www.rfc-editor.org/rfc/rfc3061>.
-
-   [RFC4648]  Josefsson, S., "The Base16, Base32, and Base64 Data
-              Encodings", RFC 4648, DOI 10.17487/RFC4648, October 2006,
-              <https://www.rfc-editor.org/rfc/rfc4648>.
-
-   [RFC5234]  Crocker, D., Ed. and P. Overell, "Augmented BNF for Syntax
-              Specifications: ABNF", STD 68, RFC 5234,
-              DOI 10.17487/RFC5234, January 2008,
-              <https://www.rfc-editor.org/rfc/rfc5234>.
-
-   [RFC5705]  Rescorla, E., "Keying Material Exporters for Transport
-              Layer Security (TLS)", RFC 5705, DOI 10.17487/RFC5705,
-              March 2010, <https://www.rfc-editor.org/rfc/rfc5705>.
-
-   [RFC7230]  Fielding, R., Ed. and J. Reschke, Ed., "Hypertext Transfer
-              Protocol (HTTP/1.1): Message Syntax and Routing",
-              RFC 7230, DOI 10.17487/RFC7230, June 2014,
-              <https://www.rfc-editor.org/rfc/rfc7230>.
-
-   [RFC7235]  Fielding, R., Ed. and J. Reschke, Ed., "Hypertext Transfer
-              Protocol (HTTP/1.1): Authentication", RFC 7235,
-              DOI 10.17487/RFC7235, June 2014,
-              <https://www.rfc-editor.org/rfc/rfc7235>.
-
-   [RFC7405]  Kyzivat, P., "Case-Sensitive String Support in ABNF",
-              RFC 7405, DOI 10.17487/RFC7405, December 2014,
-              <https://www.rfc-editor.org/rfc/rfc7405>.
-
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
 
-   [RFC8446]  Rescorla, E., "The Transport Layer Security (TLS) Protocol
-              Version 1.3", RFC 8446, DOI 10.17487/RFC8446, August 2018,
-              <https://www.rfc-editor.org/rfc/rfc8446>.
-
 8.2.  Informative References
 
-   [DGRAM]    Pauly, T., Kinnear, E., and D. Schinazi, "An Unreliable
-              Datagram Extension to QUIC", Work in Progress, Internet-
-              Draft, draft-ietf-quic-datagram-10, 4 February 2022,
-              <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
-              datagram-10>.
-
-   [HTTP3]    Bishop, M., "HTTP/3", Work in Progress, Internet-Draft,
-              draft-ietf-quic-http-34, 2 February 2021,
-              <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
-              http-34>.
-
-   [MASQUE]   Schinazi, D., "The MASQUE Protocol", Work in Progress,
-              Internet-Draft, draft-schinazi-masque-protocol-03, 12
-              March 2021, <https://datatracker.ietf.org/doc/html/draft-
-              schinazi-masque-protocol-03>.
-
-   [QUIC]     Iyengar, J. and M. Thomson, "QUIC: A UDP-Based Multiplexed
-              and Secure Transport", Work in Progress, Internet-Draft,
-              draft-ietf-quic-transport-34, 14 January 2021,
-              <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
-              transport-34>.
-
-   [QUIC-TLS] Thomson, M. and S. Turner, "Using TLS to Secure QUIC",
-              Work in Progress, Internet-Draft, draft-ietf-quic-tls-34,
-              14 January 2021, <https://datatracker.ietf.org/doc/html/
-              draft-ietf-quic-tls-34>.
-
-   [RFC6234]  Eastlake 3rd, D. and T. Hansen, "US Secure Hash Algorithms
-              (SHA and SHA-based HMAC and HKDF)", RFC 6234,
-              DOI 10.17487/RFC6234, May 2011,
-              <https://www.rfc-editor.org/rfc/rfc6234>.
-
-   [RFC7427]  Kivinen, T. and J. Snyder, "Signature Authentication in
-              the Internet Key Exchange Version 2 (IKEv2)", RFC 7427,
-              DOI 10.17487/RFC7427, January 2015,
-              <https://www.rfc-editor.org/rfc/rfc7427>.
-
-   [RFC8410]  Josefsson, S. and J. Schaad, "Algorithm Identifiers for
+   [ED25519]  Josefsson, S. and J. Schaad, "Algorithm Identifiers for
               Ed25519, Ed448, X25519, and X448 for Use in the Internet
               X.509 Public Key Infrastructure", RFC 8410,
               DOI 10.17487/RFC8410, August 2018,
               <https://www.rfc-editor.org/rfc/rfc8410>.
 
-   [WEBTRANS-H]
-              Vasiliev, V., "WebTransport over HTTP/3", Work in
-              Progress, Internet-Draft, draft-vvv-webtransport-http3-03,
-              27 January 2021, <https://datatracker.ietf.org/doc/html/
-              draft-vvv-webtransport-http3-03>.
+   [QUIC-TLS] Thomson, M., Ed. and S. Turner, Ed., "Using TLS to Secure
+              QUIC", RFC 9001, DOI 10.17487/RFC9001, May 2021,
+              <https://www.rfc-editor.org/rfc/rfc9001>.
+
+   [SHA]      Eastlake 3rd, D. and T. Hansen, "US Secure Hash Algorithms
+              (SHA and SHA-based HMAC and HKDF)", RFC 6234,
+              DOI 10.17487/RFC6234, May 2011,
+              <https://www.rfc-editor.org/rfc/rfc6234>.
 
 Acknowledgments
 
    The authors would like to thank many members of the IETF community,
    as this document is the fruit of many hallway conversations.  Using
    the OID for the signature and HMAC algorithms was inspired by
-   Signature Authentication in IKEv2 [RFC7427].
+   Signature Authentication in IKEv2.
 
 Author's Address
 
