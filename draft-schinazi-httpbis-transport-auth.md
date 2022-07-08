@@ -289,7 +289,6 @@ Both of these entries are listed with the following qualifiers:
   +---------+-------------+---------------+
 ~~~
 
-
 --- back
 
 # Acknowledgments {#acknowledgments}
