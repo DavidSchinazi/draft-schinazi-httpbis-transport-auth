@@ -6,6 +6,7 @@ submissiontype: IETF
 number:
 date:
 consensus: true
+v: 3
 category: exp
 wg: HTTPBIS
 area: Applications
