@@ -1,0 +1,71 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2022-07-10T00:47:41.376935+00:00",
+  "repo": "DavidSchinazi/draft-schinazi-httpbis-transport-auth",
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    }
+  ],
+  "issues": [
+    {
+      "number": 1,
+      "id": "I_kwDOHoP9o85Nd8NL",
+      "title": "initial editorial comments",
+      "url": "https://github.com/DavidSchinazi/draft-schinazi-httpbis-transport-auth/issues/1",
+      "state": "OPEN",
+      "author": "m4mb01t4l14n0",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Abstract: _... there is no existing way for the origin to share such a nonce without exposing the fact that they serve resources ..._\r\n\r\ns/they serve/it serves \r\n\r\nAlso, some might consider this a run-on sentence.  An abstract's brevity might condone such behavior, of course.\r\n\r\nSection 1: Here I think it's better to have shorter sentences. I support directly stating that non-probability is a key feature, but I feel that requires an explanation.  I don't have better wording yet - will consider and propose later.  I find the second paragraph a bit abrupt having just stated the reasons non-probability is useful.  There needs to be a caveat here, thus:  \"There are scenarios where servers may want to expose that authentication is required for access to specific resources.  This is left for future work.\"\r\n\r\nSection 5: _...HTTP intermediaries that support this specification will validate the authentication received from the client themselves, then let the upstream HTTP server using some other mechanism..._.\r\n\r\nincomplete sentence.  Likely \"...let the upstream HTTP server AUTHENTICATE THE CLIENT using some other mechanism.\"",
+      "createdAt": "2022-07-09T14:26:01Z",
+      "updatedAt": "2022-07-09T14:26:01Z",
+      "closedAt": null,
+      "comments": []
+    }
+  ],
+  "pulls": []
+}
