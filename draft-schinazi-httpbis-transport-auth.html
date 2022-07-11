@@ -6,6 +6,7 @@
 <meta content="initial-scale=1.0" name="viewport">
 <title>HTTP Transport Authentication</title>
 <meta content="David Schinazi" name="author">
+<meta content="David M. Oliver" name="author">
 <meta content="
        Existing HTTP authentication mechanisms are probeable in the sense that it is
 possible for an unauthenticated client to probe whether an origin serves
@@ -14,7 +15,7 @@ fact that it requires authentication by not generating Unauthorized status
 codes, however that only works with non-cryptographic authentication schemes:
 cryptographic schemes (such as signatures or message authentication codes)
 require a fresh nonce to be signed, and there is no existing way for the origin
-to share such a nonce without exposing the fact that they serve resources that
+to share such a nonce without exposing the fact that it serves resources that
 require authentication. This document proposes a new non-probeable cryptographic
 authentication scheme. 
     " name="description">
@@ -1041,8 +1042,8 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
 <td class="right">July 2022</td>
 </tr></thead>
 <tfoot><tr>
-<td class="left">Schinazi</td>
-<td class="center">Expires 9 January 2023</td>
+<td class="left">Schinazi &amp; Oliver</td>
+<td class="center">Expires 12 January 2023</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1055,17 +1056,21 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-schinazi-httpbis-transport-auth-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2022-07-08" class="published">8 July 2022</time>
+<time datetime="2022-07-11" class="published">11 July 2022</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Experimental</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2023-01-09">9 January 2023</time></dd>
-<dt class="label-authors">Author:</dt>
+<dd class="expires"><time datetime="2023-01-12">12 January 2023</time></dd>
+<dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
       <div class="author-name">D. Schinazi</div>
 <div class="org">Google LLC</div>
+</div>
+<div class="author">
+      <div class="author-name">D. Oliver</div>
+<div class="org">Guardian Project</div>
 </div>
 </dd>
 </dl>
@@ -1080,7 +1085,7 @@ fact that it requires authentication by not generating Unauthorized status
 codes, however that only works with non-cryptographic authentication schemes:
 cryptographic schemes (such as signatures or message authentication codes)
 require a fresh nonce to be signed, and there is no existing way for the origin
-to share such a nonce without exposing the fact that they serve resources that
+to share such a nonce without exposing the fact that it serves resources that
 require authentication. This document proposes a new non-probeable cryptographic
 authentication scheme.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
@@ -1118,7 +1123,7 @@ authentication scheme.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 9 January 2023.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 12 January 2023.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1218,7 +1223,7 @@ authentication scheme.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
             <p id="section-toc.1-1.9.1"><a href="#appendix-A" class="xref"></a><a href="#name-acknowledgments" class="xref">Acknowledgments</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
-            <p id="section-toc.1-1.10.1"><a href="#appendix-B" class="xref"></a><a href="#name-authors-address" class="xref">Author's Address</a></p>
+            <p id="section-toc.1-1.10.1"><a href="#appendix-B" class="xref"></a><a href="#name-authors-addresses" class="xref">Authors' Addresses</a></p>
 </li>
         </ul>
 </nav>
@@ -1236,12 +1241,12 @@ fact that it requires authentication by not generating Unauthorized status
 codes, however that only works with non-cryptographic authentication schemes:
 cryptographic schemes (such as signatures or message authentication codes)
 require a fresh nonce to be signed, and there is no existing way for the origin
-to share such a nonce without exposing the fact that they serve resources that
+to share such a nonce without exposing the fact that it serves resources that
 require authentication. This document proposes a new non-probeable cryptographic
 authentication scheme.<a href="#section-1-1" class="pilcrow">¶</a></p>
-<p id="section-1-2">Note that there is currently no mechanism for origin servers to request
-that user agents authenticate themselves using Transport Authentication,
-this is left as future work.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-2">There are scenarios where servers may want to expose the fact that
+authentication is required for access to specific resources. This is left for
+future work.<a href="#section-1-2" class="pilcrow">¶</a></p>
 <div id="conventions">
 <section id="section-1.1">
         <h3 id="name-conventions-and-definitions">
@@ -1413,8 +1418,9 @@ cyA1MTIgYml0cyBmb3IgU0hBLTUxMiEhISEhIQ=="
 <p id="section-5-1">Since Transport Authentication authenticates the underlying transport by
 leveraging TLS keying material exporters, it cannot be transparently forwarded
 by HTTP intermediaries. HTTP intermediaries that support this specification will
-validate the authentication received from the client themselves, then let the
-upstream HTTP server using some other mechanism.<a href="#section-5-1" class="pilcrow">¶</a></p>
+validate the authentication received from the client themselves, then inform the
+upstream HTTP server of the presence of valid authentication using some other
+mechanism.<a href="#section-5-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="security">
@@ -1607,8 +1613,8 @@ IKEv2.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
 </div>
 <div id="authors-addresses">
 <section id="appendix-B">
-      <h2 id="name-authors-address">
-<a href="#name-authors-address" class="section-name selfRef">Author's Address</a>
+      <h2 id="name-authors-addresses">
+<a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
       </h2>
 <address class="vcard">
         <div dir="auto" class="left"><span class="fn nameRole">David Schinazi</span></div>
@@ -1621,6 +1627,18 @@ IKEv2.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
 <div class="email">
 <span>Email:</span>
 <a href="mailto:dschinazi.ietf@gmail.com" class="email">dschinazi.ietf@gmail.com</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">David M. Oliver</span></div>
+<div dir="auto" class="left"><span class="org">Guardian Project</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:david@guardianproject.info" class="email">david@guardianproject.info</a>
+</div>
+<div class="url">
+<span>URI:</span>
+<a href="https://guardianproject.info" class="url">https://guardianproject.info</a>
 </div>
 </address>
 </section>

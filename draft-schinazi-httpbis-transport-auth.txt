@@ -4,8 +4,9 @@
 
 HTTPBIS                                                      D. Schinazi
 Internet-Draft                                                Google LLC
-Intended status: Experimental                                8 July 2022
-Expires: 9 January 2023
+Intended status: Experimental                                  D. Oliver
+Expires: 12 January 2023                                Guardian Project
+                                                            11 July 2022
 
 
                      HTTP Transport Authentication
@@ -21,7 +22,7 @@ Abstract
    non-cryptographic authentication schemes: cryptographic schemes (such
    as signatures or message authentication codes) require a fresh nonce
    to be signed, and there is no existing way for the origin to share
-   such a nonce without exposing the fact that they serve resources that
+   such a nonce without exposing the fact that it serves resources that
    require authentication.  This document proposes a new non-probeable
    cryptographic authentication scheme.
 
@@ -58,7 +59,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 9 January 2023.
+   This Internet-Draft will expire on 12 January 2023.
 
 Copyright Notice
 
@@ -96,7 +97,7 @@ Table of Contents
      8.1.  Normative References
      8.2.  Informative References
    Acknowledgments
-   Author's Address
+   Authors' Addresses
 
 1.  Introduction
 
@@ -108,13 +109,13 @@ Table of Contents
    non-cryptographic authentication schemes: cryptographic schemes (such
    as signatures or message authentication codes) require a fresh nonce
    to be signed, and there is no existing way for the origin to share
-   such a nonce without exposing the fact that they serve resources that
+   such a nonce without exposing the fact that it serves resources that
    require authentication.  This document proposes a new non-probeable
    cryptographic authentication scheme.
 
-   Note that there is currently no mechanism for origin servers to
-   request that user agents authenticate themselves using Transport
-   Authentication, this is left as future work.
+   There are scenarios where servers may want to expose the fact that
+   authentication is required for access to specific resources.  This is
+   left for future work.
 
 1.1.  Conventions and Definitions
 
@@ -233,8 +234,9 @@ Table of Contents
    by leveraging TLS keying material exporters, it cannot be
    transparently forwarded by HTTP intermediaries.  HTTP intermediaries
    that support this specification will validate the authentication
-   received from the client themselves, then let the upstream HTTP
-   server using some other mechanism.
+   received from the client themselves, then inform the upstream HTTP
+   server of the presence of valid authentication using some other
+   mechanism.
 
 6.  Security Considerations
 
@@ -365,7 +367,7 @@ Acknowledgments
    the OID for the signature and HMAC algorithms was inspired by
    Signature Authentication in IKEv2.
 
-Author's Address
+Authors' Addresses
 
    David Schinazi
    Google LLC
@@ -373,3 +375,9 @@ Author's Address
    Mountain View, CA 94043
    United States of America
    Email: dschinazi.ietf@gmail.com
+
+
+   David M. Oliver
+   Guardian Project
+   Email: david@guardianproject.info
+   URI:   https://guardianproject.info
