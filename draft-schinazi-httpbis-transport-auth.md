@@ -108,8 +108,8 @@ generate a 32-byte key which is then used as a nonce.
 
 # Header Field Definition {#header-definition}
 
-The "Transport-Authentication" header allows a user agent to authenticate
-its transport connection with an origin server.
+The "Transport-Authentication" header allows a user agent to authenticate with
+an origin server.
 
 ~~~
   Transport-Authentication = tpauth-scheme *( OWS ";" OWS param )
