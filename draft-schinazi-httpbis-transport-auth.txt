@@ -153,7 +153,7 @@ Table of Contents
 3.  Header Field Definition
 
    The "Transport-Authentication" header allows a user agent to
-   authenticate its transport connection with an origin server.
+   authenticate with an origin server.
 
      Transport-Authentication = tpauth-scheme *( OWS ";" OWS param )
      tpauth-scheme            = token
