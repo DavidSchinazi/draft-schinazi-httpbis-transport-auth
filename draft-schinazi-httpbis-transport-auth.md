@@ -33,6 +33,12 @@ author:
     code: 94043
     country: United States of America
     email: dschinazi.ietf@gmail.com
+  -
+    ins: D. Oliver
+    name: David M. Oliver
+    org: Guardian Project
+    email: david@guardianproject.info
+    uri: https://guardianproject.info
 normative:
   HTTP: RFC9110
 
@@ -45,7 +51,7 @@ fact that it requires authentication by not generating Unauthorized status
 codes, however that only works with non-cryptographic authentication schemes:
 cryptographic schemes (such as signatures or message authentication codes)
 require a fresh nonce to be signed, and there is no existing way for the origin
-to share such a nonce without exposing the fact that they serve resources that
+to share such a nonce without exposing the fact that it serves resources that
 require authentication. This document proposes a new non-probeable cryptographic
 authentication scheme.
 
@@ -60,14 +66,13 @@ fact that it requires authentication by not generating Unauthorized status
 codes, however that only works with non-cryptographic authentication schemes:
 cryptographic schemes (such as signatures or message authentication codes)
 require a fresh nonce to be signed, and there is no existing way for the origin
-to share such a nonce without exposing the fact that they serve resources that
+to share such a nonce without exposing the fact that it serves resources that
 require authentication. This document proposes a new non-probeable cryptographic
 authentication scheme.
 
-Note that there is currently no mechanism for origin servers to request
-that user agents authenticate themselves using Transport Authentication,
-this is left as future work.
-
+There are scenarios where servers may want to expose the fact that
+authentication is required for access to specific resources. This is left for
+future work.
 
 ## Conventions and Definitions {#conventions}
 
@@ -203,8 +208,9 @@ cyA1MTIgYml0cyBmb3IgU0hBLTUxMiEhISEhIQ=="
 Since Transport Authentication authenticates the underlying transport by
 leveraging TLS keying material exporters, it cannot be transparently forwarded
 by HTTP intermediaries. HTTP intermediaries that support this specification will
-validate the authentication received from the client themselves, then let the
-upstream HTTP server using some other mechanism.
+validate the authentication received from the client themselves, then inform the
+upstream HTTP server of the presence of valid authentication using some other
+mechanism.
 
 
 # Security Considerations {#security}
