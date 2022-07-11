@@ -1294,7 +1294,8 @@ generate a 32-byte key which is then used as a nonce.<a href="#section-2-2" clas
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-header-field-definition" class="section-name selfRef">Header Field Definition</a>
       </h2>
 <p id="section-3-1">The "Transport-Authentication" header allows a user agent to authenticate with
-an origin server.<a href="#section-3-1" class="pilcrow">¶</a></p>
+an origin server. The authentication is scoped to the HTTP request associated
+with this header.<a href="#section-3-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3-2">
 <pre>
   Transport-Authentication = tpauth-scheme *( OWS ";" OWS param )
