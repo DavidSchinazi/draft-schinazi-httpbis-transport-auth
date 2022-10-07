@@ -1,6 +1,5 @@
 ---
-title: HTTP Transport Authentication
-abbrev: HTTP Transport Authentication
+title: HTTP Unprompted Authentication
 docname: draft-schinazi-httpbis-transport-auth-latest
 submissiontype: IETF
 number:
@@ -39,8 +38,19 @@ author:
     org: Guardian Project
     email: david@guardianproject.info
     uri: https://guardianproject.info
-normative:
-  HTTP: RFC9110
+  -
+    ins: J. Hoyland
+    name: Jonathan Hoyland
+    org: Cloudflare Inc.
+    email: jonathan.hoyland@gmail.com
+
+informative:
+  H2:
+    =: RFC9113
+    display: HTTP/2
+  H3:
+    =: RFC9114
+    display: HTTP/3
 
 --- abstract
 
@@ -55,20 +65,23 @@ to share such a nonce without exposing the fact that it serves resources that
 require authentication. This document proposes a new non-probeable cryptographic
 authentication scheme.
 
+> Note that, if this document is adopted by the HTTPBIS working group, it will
+be renamed to draft-ietf-httpbis-unprompted-auth.
+
 --- middle
 
 # Introduction {#introduction}
 
-Existing HTTP authentication mechanisms are probeable in the sense that it is
-possible for an unauthenticated client to probe whether an origin serves
-resources that require authentication. It is possible for an origin to hide the
-fact that it requires authentication by not generating Unauthorized status
-codes, however that only works with non-cryptographic authentication schemes:
-cryptographic schemes (such as signatures or message authentication codes)
-require a fresh nonce to be signed, and there is no existing way for the origin
-to share such a nonce without exposing the fact that it serves resources that
-require authentication. This document proposes a new non-probeable cryptographic
-authentication scheme.
+Existing HTTP authentication mechanisms (see {{Section 11 of !HTTP=RFC9110}})
+are probeable in the sense that it is possible for an unauthenticated client to
+probe whether an origin serves resources that require authentication. It is
+possible for an origin to hide the fact that it requires authentication by not
+generating Unauthorized status codes, however that only works with
+non-cryptographic authentication schemes: cryptographic schemes (such as
+signatures or message authentication codes) require a fresh nonce to be signed,
+and there is no existing way for the origin to share such a nonce without
+exposing the fact that it serves resources that require authentication. This
+document proposes a new non-probeable cryptographic authentication scheme.
 
 There are scenarios where servers may want to expose the fact that
 authentication is required for access to specific resources. This is left for
@@ -78,145 +91,117 @@ future work.
 
 {::boilerplate bcp14-tagged}
 
-This document uses the Augmented BNF defined in {{!ABNF=RFC5234}} and updated by
-{{!ABNF2=RFC7405}} along with the "#rule" extension defined in {{Section 5.6.1
-of HTTP}}. The rules below are defined in {{HTTP}} and {{!OID=RFC3061}}.
-
-~~~
-  OWS           = <OWS, see {{Section 5.6.3 of HTTP}}>
-  quoted-string = <quoted-string, see {{Section 5.6.4 of HTTP}}>
-  token         = <token, see {{Section 5.6.2 of HTTP}}>
-  token68       = <token68, see {{Section 5.6.3 of HTTP}}>
-  oid           = <oid, see {{Section 2 of OID}}>
-~~~
-
+This document uses the following terminology from {{Section 3 of
+!STRUCTURED-FIELDS=RFC8941}} to specify syntax and parsing: Integer, Token and
+Byte Sequence.
 
 # Computing the Authentication Proof {#compute-proof}
 
-This document only defines Transport Authentication for uses of HTTP with TLS.
-This includes any use of HTTP over TLS as typically used for HTTP/2, or
-HTTP/3 where the transport protocol uses TLS as its authentication and key
-exchange mechanism {{?QUIC-TLS=RFC9001}}.
+This document only defines Unprompted Authentication for uses of HTTP with TLS
+{{!TLS=RFC8446}}. This includes any use of HTTP over TLS as typically used for
+HTTP/2 {{H2}}, or HTTP/3 {{H3}} where the transport protocol uses TLS as its
+authentication and key exchange mechanism {{?QUIC-TLS=RFC9001}}.
 
 The user agent leverages a TLS keying material exporter {{!KEY-EXPORT=RFC5705}}
-to generate a nonce which can be signed using the user-id's key. The keying
+to generate a nonce which can be signed using the user's key. The keying
 material exporter uses a label that starts with the characters
-"EXPORTER-HTTP-Transport-Authentication-" (see {{schemes}} for the labels and
+"EXPORTER-HTTP-Unprompted-Authentication-" (see {{schemes}} for the labels and
 contexts used by each scheme). The TLS keying material exporter is used to
 generate a 32-byte key which is then used as a nonce.
 
-
 # Header Field Definition {#header-definition}
 
-The "Transport-Authentication" header allows a user agent to authenticate with
-an origin server. The authentication is scoped to the HTTP request associated
-with this header.
+The "Unprompted-Authentication" header field allows a user agent to authenticate
+with an origin server. The authentication is scoped to the HTTP request
+associated with this header field. The value of the Unprompted-Authentication
+header field is a token which represents the Unpromted Authentication Scheme;
+see {{schemes}}. This header field supports parameters.
 
-~~~
-  Transport-Authentication = tpauth-scheme *( OWS ";" OWS param )
-  tpauth-scheme            = token
-  param                    = token "=" ( token / quoted-string )
-~~~
+## The u Parameter {#parameter-u}
 
+The OPTIONAL "u" (user ID) parameter is a byte sequence that specifies the user
+ID that the user agent wishes to authenticate.
 
-## The u Directive {#directive-u}
+## The p Parameter {#parameter-p}
 
-The OPTIONAL "u" (user-id) directive specifies the user-id that the user
-agent wishes to authenticate. It is encoded using
-Base64 ({{Section 4 of !BASE64=RFC4648}}).
+The OPTIONAL "p" (proof) parameter is a byte sequence that specifies the proof
+that the user agent provides to attest to possessing the credential that matches
+its user ID.
 
-~~~
-    u = token68
-~~~
+## The s Parameter {#parameter-s}
 
+The OPTIONAL "s" (signature) parameter is an integer that specifies the
+signature algorithm used to compute the proof transmitted in the "p" directive.
+Its value is an integer between 0 and 255 inclusive from the IANA "TLS
+SignatureAlgorithm" registry maintained at
+<[](https://www.iana.org/assignments/tls-parameters#tls-parameters-16)>.
 
-## The p Directive {#directive-p}
+## The h Parameter {#parameter-h}
 
-The OPTIONAL "p" (proof) directive specifies the proof that the user agent
-provides to attest to possessing the credential that matches its user-id.
-It is encoded using Base64 ({{Section 4 of BASE64}}).
+The OPTIONAL "h" (hash) parameter is an integer that specifies the hash
+algorithm used to compute the proof transmitted in the "p" directive. Its value
+is an integer between 0 and 255 inclusive from the IANA "TLS HashAlgorithm"
+registry maintained at
+<[](https://www.iana.org/assignments/tls-parameters#tls-parameters-18)>.
 
-~~~
-    p = token68
-~~~
+# Unprompted Authentication Schemes {#schemes}
 
-
-## The a Directive {#directive-a}
-
-The OPTIONAL "a" (algorithm) directive specifies the algorithm used to compute
-the proof transmitted in the "p" directive.
-
-~~~
-    a = oid
-~~~
-
-
-# Transport Authentication Schemes {#schemes}
-
-The Transport Authentication Framework allows defining Transport
-Authentication Schemes, which specify how to authenticate user-ids. This
+The Unprompted Authentication Framework allows defining Unprompted
+Authentication Schemes, which specify how to authenticate user IDs. This
 documents defined the "Signature" and "HMAC" schemes.
-
 
 ## Signature {#signature}
 
-The "Signature" Transport Authentication Scheme uses asymmetric cyptography.
-User agents possess a user-id and a public/private key pair, and origin
-servers maintain a mapping of authorized user-ids to their associated public
-keys. When using this scheme, the "u", "p", and "a" directives are REQUIRED.
-The TLS keying material export label for this scheme is
-"EXPORTER-HTTP-Transport-Authentication-Signature" and the associated
-context is empty. The nonce is then signed using the selected asymmetric
-signature algorithm and transmitted as the proof directive.
+The "Signature" Unprompted Authentication Scheme uses asymmetric cyptography.
+User agents possess a user ID and a public/private key pair, and origin servers
+maintain a mapping of authorized user IDs to their associated public keys. When
+using this scheme, the "u", "p", and "s" parameters are REQUIRED. The TLS keying
+material export label for this scheme is
+"EXPORTER-HTTP-Unprompted-Authentication-Signature" and the associated context
+is empty. The nonce is then signed using the selected asymmetric signature
+algorithm and transmitted as the proof directive.
 
-For example, the user-id "john.doe" authenticating using Ed25519
-{{?ED25519=RFC8410}} could produce the following header (lines are folded to
-fit):
+For example, the user ID "john.doe" authenticating using Ed25519
+{{?ED25519=RFC8410}} could produce the following header field (lines are folded
+to fit):
 
 ~~~
-Transport-Authentication: Signature u="am9obi5kb2U=";
-a=1.3.101.112;
-p="SW5zZXJ0IHNpZ25hdHVyZSBvZiBub25jZSBoZXJlIHdo
-aWNoIHRha2VzIDUxMiBiaXRzIGZvciBFZDI1NTE5IQ=="
+Unprompted-Authentication: Signature u=:am9obi5kb2U=:;s=7;
+p=:SW5zZXJ0IHNpZ25hdHVyZSBvZiBub25jZSBoZXJlIHdo
+aWNoIHRha2VzIDUxMiBiaXRzIGZvciBFZDI1NTE5IQ==:
 ~~~
-
 
 ## HMAC {#hmac}
 
-The "HMAC" Transport Authentication Scheme uses symmetric cyptography.
-User agents possess a user-id and a secret key, and origin servers maintain a
-mapping of authorized user-ids to their associated secret key. When using this
-scheme, the "u", "p", and "a" directives are REQUIRED.
-The TLS keying material export label for this scheme is
-"EXPORTER-HTTP-Transport-Authentication-HMAC" and the associated
-context is empty. The nonce is then HMACed using the selected HMAC algorithm
-and transmitted as the proof directive.
+The "HMAC" Unprompted Authentication Scheme uses symmetric cyptography. User
+agents possess a user ID and a secret key, and origin servers maintain a mapping
+of authorized user IDs to their associated secret key. When using this scheme,
+the "u", "p", and "h" parameters are REQUIRED. The TLS keying material export
+label for this scheme is "EXPORTER-HTTP-Unprompted-Authentication-HMAC" and the
+associated context is empty. The nonce is then HMACed using the selected HMAC
+algorithm and transmitted as the proof directive.
 
-For example, the user-id "john.doe" authenticating using
-HMAC-SHA-512 {{?SHA=RFC6234}} could produce the following
-header (lines are folded to fit):
+For example, the user ID "john.doe" authenticating using HMAC-SHA-512
+{{?SHA=RFC6234}} could produce the following header field (lines are folded to
+fit):
 
 ~~~
-Transport-Authentication: HMAC u="am9obi5kb2U=";
-a=2.16.840.1.101.3.4.2.3;
+Unprompted-Authentication: HMAC u="am9obi5kb2U=";h=6;
 p="SW5zZXJ0IEhNQUMgb2Ygbm9uY2UgaGVyZSB3aGljaCB0YWtl
 cyA1MTIgYml0cyBmb3IgU0hBLTUxMiEhISEhIQ=="
 ~~~
 
-
 # Intermediary Considerations {#intermediary}
 
-Since Transport Authentication authenticates the underlying transport by
-leveraging TLS keying material exporters, it cannot be transparently forwarded
-by HTTP intermediaries. HTTP intermediaries that support this specification will
-validate the authentication received from the client themselves, then inform the
-upstream HTTP server of the presence of valid authentication using some other
-mechanism.
-
+Since Unprompted Authentication leverages TLS keying material exporters, it
+cannot be transparently forwarded by HTTP intermediaries. HTTP intermediaries
+that support this specification will validate the authentication received from
+the client themselves, then inform the upstream HTTP server of the presence of
+valid authentication using some other mechanism.
 
 # Security Considerations {#security}
 
-Transport Authentication allows a user-agent to authenticate to an origin
+Unprompted Authentication allows a user-agent to authenticate to an origin
 server while guaranteeing freshness and without the need for the server
 to transmit a nonce to the user agent. This allows the server to accept
 authenticated clients without revealing that it supports or expects
@@ -224,25 +209,40 @@ authentication for some resources. It also allows authentication without
 the user agent leaking the presence of authentication to observers due to
 clear-text TLS Client Hello extensions.
 
+The authentication proofs described in this document are not bound to individual
+HTTP requests; if the same user sends an authentication proof on multiple
+requests they will all be identical. This allows for better compression when
+sending over the wire, but implies that client implementations that multiplex
+different security contexts over a single HTTP connection need to ensure that
+those contexts cannot read each other's header fields. Otherwise, one context
+would be able to replay the unprompted authentication header field of another.
+This constraint is met by modern Web browsers. If an attacker were to compromise
+the browser such that it could access another context's memory, the attacker
+might also be able to access the corresponding key, so binding authentication to
+requests would not provide much benefit in practice.
 
 # IANA Considerations {#iana}
 
-## Transport-Authentication Header Field {#iana-header}
+## Unprompted-Authentication Header Field {#iana-header}
 
 This document will request IANA to register the following entry in the "HTTP
 Field Name" registry maintained at
 <[](https://www.iana.org/assignments/http-fields)>:
 
 Field Name:
-: Transport-Authentication
+
+: Unprompted-Authentication
 
 Template:
+
 : None
 
 Status:
+
 : provisional (permanent if this document is approved)
 
 Reference:
+
 : This document
 
 Comments:
@@ -250,10 +250,9 @@ Comments:
 : None
 {: spacing="compact"}
 
+## Unprompted Authentication Schemes Registry {#iana-schemes}
 
-## Transport Authentication Schemes Registry {#iana-schemes}
-
-This document, if approved, requests IANA to create a new "HTTP Transport
+This document, if approved, requests IANA to create a new "HTTP Unprompted
 Authentication Schemes" Registry. This new registry contains strings and is
 covered by the First Come First Served policy from {{Section 4.4 of
 !IANA-POLICY=RFC8126}}. Each entry contains an optional "Reference" field.
@@ -270,11 +269,11 @@ The reference for both is this document.
 
 This document, if approved, requests IANA to register the following entries in
 the "TLS Exporter Labels" registry maintained at
-<https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml#exporter-labels>
+<[](https://www.iana.org/assignments/tls-parameters#exporter-labels)>:
 
-* EXPORTER-HTTP-Transport-Authentication-Signature
+* EXPORTER-HTTP-Unprompted-Authentication-Signature
 
-* EXPORTER-HTTP-Transport-Authentication-HMAC
+* EXPORTER-HTTP-Unprompted-Authentication-HMAC
 
 Both of these entries are listed with the following qualifiers:
 
@@ -297,8 +296,6 @@ Reference:
 {:numbered="false"}
 
 The authors would like to thank many members of the IETF community, as this
-document is the fruit of many hallway conversations. Using the OID for the
-signature and HMAC algorithms was inspired by Signature Authentication in
-IKEv2.
+document is the fruit of many hallway conversations.
 
 
