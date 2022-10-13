@@ -6,7 +6,7 @@ number:
 date:
 consensus: true
 v: 3
-category: exp
+category: std
 wg: HTTPBIS
 area: "Applications and Real-Time"
 venue:
