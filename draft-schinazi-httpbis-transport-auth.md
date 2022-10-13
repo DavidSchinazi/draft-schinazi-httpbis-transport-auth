@@ -65,9 +65,6 @@ to share such a nonce without exposing the fact that it serves resources that
 require authentication. This document proposes a new non-probeable cryptographic
 authentication scheme.
 
-> Note that, if this document is adopted by the HTTPBIS working group, it will
-be renamed to draft-ietf-httpbis-unprompted-auth.
-
 --- middle
 
 # Introduction {#introduction}
