@@ -4,15 +4,15 @@
 
 HTTPBIS                                                      D. Schinazi
 Internet-Draft                                                Google LLC
-Intended status: Experimental                                  D. Oliver
-Expires: 16 April 2023                                  Guardian Project
+Intended status: Standards Track                               D. Oliver
+Expires: 28 July 2023                                   Guardian Project
                                                               J. Hoyland
                                                          Cloudflare Inc.
-                                                         13 October 2022
+                                                         24 January 2023
 
 
                      HTTP Unprompted Authentication
-              draft-schinazi-httpbis-transport-auth-latest
+             draft-schinazi-httpbis-unprompted-auth-latest
 
 Abstract
 
@@ -34,9 +34,9 @@ About This Document
 
    The latest revision of this draft can be found at
    https://DavidSchinazi.github.io/draft-schinazi-httpbis-transport-
-   auth/draft-schinazi-httpbis-transport-auth.html.  Status information
+   auth/draft-schinazi-httpbis-unprompted-auth.html.  Status information
    for this document may be found at https://datatracker.ietf.org/doc/
-   draft-schinazi-httpbis-transport-auth/.
+   draft-schinazi-httpbis-unprompted-auth/.
 
    Discussion of this document takes place on the HTTP Working Group
    mailing list (mailto:ietf-http-wg@w3.org), which is archived at
@@ -61,11 +61,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 16 April 2023.
+   This Internet-Draft will expire on 28 July 2023.
 
 Copyright Notice
 
-   Copyright (c) 2022 IETF Trust and the persons identified as the
+   Copyright (c) 2023 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -87,14 +87,15 @@ Table of Contents
      3.2.  The p Parameter
      3.3.  The s Parameter
      3.4.  The h Parameter
-   4.  Unprompted Authentication Schemes
+   4.  Authentication Schemes
      4.1.  Signature
      4.2.  HMAC
+     4.3.  Other HTTP Authentication Schemes
    5.  Intermediary Considerations
    6.  Security Considerations
    7.  IANA Considerations
      7.1.  Unprompted-Authentication Header Field
-     7.2.  Unprompted Authentication Schemes Registry
+     7.2.  HTTP Authentication Schemes Registry
      7.3.  TLS Keying Material Exporter Labels
    8.  References
      8.1.  Normative References
@@ -155,8 +156,8 @@ Table of Contents
    authenticate with an origin server.  The authentication is scoped to
    the HTTP request associated with this header field.  The value of the
    Unprompted-Authentication header field is a token which represents
-   the Unpromted Authentication Scheme; see Section 4.  This header
-   field supports parameters.
+   the HTTP Authentication Scheme; see Section 4.  This header field
+   supports parameters.
 
 3.1.  The u Parameter
 
@@ -185,15 +186,14 @@ Table of Contents
    the IANA "TLS HashAlgorithm" registry maintained at
    <https://www.iana.org/assignments/tls-parameters#tls-parameters-18>.
 
-4.  Unprompted Authentication Schemes
+4.  Authentication Schemes
 
-   The Unprompted Authentication Framework allows defining Unprompted
-   Authentication Schemes, which specify how to authenticate user IDs.
-   This documents defined the "Signature" and "HMAC" schemes.
+   This document defines the "Signature" and "HMAC" HTTP authentication
+   schemes.
 
 4.1.  Signature
 
-   The "Signature" Unprompted Authentication Scheme uses asymmetric
+   The "Signature" HTTP Authentication Scheme uses asymmetric
    cyptography.  User agents possess a user ID and a public/private key
    pair, and origin servers maintain a mapping of authorized user IDs to
    their associated public keys.  When using this scheme, the "u", "p",
@@ -213,14 +213,14 @@ Table of Contents
 
 4.2.  HMAC
 
-   The "HMAC" Unprompted Authentication Scheme uses symmetric
-   cyptography.  User agents possess a user ID and a secret key, and
-   origin servers maintain a mapping of authorized user IDs to their
-   associated secret key.  When using this scheme, the "u", "p", and "h"
-   parameters are REQUIRED.  The TLS keying material export label for
-   this scheme is "EXPORTER-HTTP-Unprompted-Authentication-HMAC" and the
-   associated context is empty.  The nonce is then HMACed using the
-   selected HMAC algorithm and transmitted as the proof directive.
+   The "HMAC" HTTP Authentication Scheme uses symmetric cyptography.
+   User agents possess a user ID and a secret key, and origin servers
+   maintain a mapping of authorized user IDs to their associated secret
+   key.  When using this scheme, the "u", "p", and "h" parameters are
+   REQUIRED.  The TLS keying material export label for this scheme is
+   "EXPORTER-HTTP-Unprompted-Authentication-HMAC" and the associated
+   context is empty.  The nonce is then HMACed using the selected HMAC
+   algorithm and transmitted as the proof directive.
 
    For example, the user ID "john.doe" authenticating using HMAC-SHA-512
    [SHA] could produce the following header field (lines are folded to
@@ -230,14 +230,21 @@ Table of Contents
    p="SW5zZXJ0IEhNQUMgb2Ygbm9uY2UgaGVyZSB3aGljaCB0YWtl
    cyA1MTIgYml0cyBmb3IgU0hBLTUxMiEhISEhIQ=="
 
+4.3.  Other HTTP Authentication Schemes
+
+   The HTTP Authentication Scheme registry maintained by IANA at
+   <https://www.iana.org/assignments/http-authschemes/http-
+   authschemes.xhtml> contains entries not defined in this document.
+   Those entries MAY be used with Unprompted Authentication.
+
 5.  Intermediary Considerations
 
-   Since Unprompted Authentication leverages TLS keying material
-   exporters, it cannot be transparently forwarded by HTTP
-   intermediaries.  HTTP intermediaries that support this specification
-   will validate the authentication received from the client themselves,
-   then inform the upstream HTTP server of the presence of valid
-   authentication using some other mechanism.
+   Since the Signature and HMAC HTTP Authentication Schemes leverage TLS
+   keying material exporters, their output cannot be transparently
+   forwarded by HTTP intermediaries.  HTTP intermediaries that support
+   this specification will validate the authentication received from the
+   client themselves, then inform the upstream HTTP server of the
+   presence of valid authentication using some other mechanism.
 
 6.  Security Considerations
 
@@ -278,21 +285,18 @@ Table of Contents
    Reference:  This document
    Comments:  None
 
-7.2.  Unprompted Authentication Schemes Registry
+7.2.  HTTP Authentication Schemes Registry
 
-   This document, if approved, requests IANA to create a new "HTTP
-   Unprompted Authentication Schemes" Registry.  This new registry
-   contains strings and is covered by the First Come First Served policy
-   from Section 4.4 of [IANA-POLICY].  Each entry contains an optional
-   "Reference" field.
-
-   It initially contains the following entries:
+   This document, if approved, requests IANA to two new entries to the
+   "HTTP Authentication Schemes" Registry maintained at
+   <https://www.iana.org/assignments/http-authschemes/http-
+   authschemes.xhtml>.  Both entries have the Reference set to this
+   document, and the Notes empty.  The Authentication Scheme Name of the
+   entries ate:
 
    *  Signature
 
    *  HMAC
-
-   The reference for both is this document.
 
 7.3.  TLS Keying Material Exporter Labels
 
@@ -318,12 +322,6 @@ Table of Contents
               Ed., "HTTP Semantics", STD 97, RFC 9110,
               DOI 10.17487/RFC9110, June 2022,
               <https://www.rfc-editor.org/rfc/rfc9110>.
-
-   [IANA-POLICY]
-              Cotton, M., Leiba, B., and T. Narten, "Guidelines for
-              Writing an IANA Considerations Section in RFCs", BCP 26,
-              RFC 8126, DOI 10.17487/RFC8126, June 2017,
-              <https://www.rfc-editor.org/rfc/rfc8126>.
 
    [KEY-EXPORT]
               Rescorla, E., "Keying Material Exporters for Transport
@@ -375,7 +373,8 @@ Table of Contents
 Acknowledgments
 
    The authors would like to thank many members of the IETF community,
-   as this document is the fruit of many hallway conversations.
+   as this document is the fruit of many hallway conversations.  Ben
+   Schwartz contributed ideas to this document.
 
 Authors' Addresses
 
