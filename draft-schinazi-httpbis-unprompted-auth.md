@@ -111,7 +111,7 @@ generate a 32-byte key which is then used as a nonce.
 The "Unprompted-Authentication" header field allows a user agent to authenticate
 with an origin server. The authentication is scoped to the HTTP request
 associated with this header field. The value of the Unprompted-Authentication
-header field is a token which represents the Unpromted Authentication Scheme;
+header field is a token which represents the HTTP Authentication Scheme;
 see {{schemes}}. This header field supports parameters.
 
 ## The u Parameter {#parameter-u}
@@ -141,15 +141,13 @@ is an integer between 0 and 255 inclusive from the IANA "TLS HashAlgorithm"
 registry maintained at
 <[](https://www.iana.org/assignments/tls-parameters#tls-parameters-18)>.
 
-# Unprompted Authentication Schemes {#schemes}
+# Authentication Schemes {#schemes}
 
-The Unprompted Authentication Framework allows defining Unprompted
-Authentication Schemes, which specify how to authenticate user IDs. This
-documents defined the "Signature" and "HMAC" schemes.
+This document defines the "Signature" and "HMAC" HTTP authentication schemes.
 
 ## Signature {#signature}
 
-The "Signature" Unprompted Authentication Scheme uses asymmetric cyptography.
+The "Signature" HTTP Authentication Scheme uses asymmetric cyptography.
 User agents possess a user ID and a public/private key pair, and origin servers
 maintain a mapping of authorized user IDs to their associated public keys. When
 using this scheme, the "u", "p", and "s" parameters are REQUIRED. The TLS keying
@@ -170,7 +168,7 @@ aWNoIHRha2VzIDUxMiBiaXRzIGZvciBFZDI1NTE5IQ==:
 
 ## HMAC {#hmac}
 
-The "HMAC" Unprompted Authentication Scheme uses symmetric cyptography. User
+The "HMAC" HTTP Authentication Scheme uses symmetric cyptography. User
 agents possess a user ID and a secret key, and origin servers maintain a mapping
 of authorized user IDs to their associated secret key. When using this scheme,
 the "u", "p", and "h" parameters are REQUIRED. The TLS keying material export
@@ -188,9 +186,17 @@ p="SW5zZXJ0IEhNQUMgb2Ygbm9uY2UgaGVyZSB3aGljaCB0YWtl
 cyA1MTIgYml0cyBmb3IgU0hBLTUxMiEhISEhIQ=="
 ~~~
 
+## Other HTTP Authentication Schemes
+
+The HTTP Authentication Scheme registry maintained by IANA at
+<[](https://www.iana.org/assignments/http-authschemes/http-authschemes.xhtml)>
+contains entries not defined in this document. Those entries MAY be used with
+Unprompted Authentication.
+
 # Intermediary Considerations {#intermediary}
 
-Since Unprompted Authentication leverages TLS keying material exporters, it
+Since the Signature and HMAC HTTP Authentication Schemes leverage TLS keying
+material exporters, their output
 cannot be transparently forwarded by HTTP intermediaries. HTTP intermediaries
 that support this specification will validate the authentication received from
 the client themselves, then inform the upstream HTTP server of the presence of
@@ -247,20 +253,17 @@ Comments:
 : None
 {: spacing="compact"}
 
-## Unprompted Authentication Schemes Registry {#iana-schemes}
+## HTTP Authentication Schemes Registry {#iana-schemes}
 
-This document, if approved, requests IANA to create a new "HTTP Unprompted
-Authentication Schemes" Registry. This new registry contains strings and is
-covered by the First Come First Served policy from {{Section 4.4 of
-!IANA-POLICY=RFC8126}}. Each entry contains an optional "Reference" field.
-
-It initially contains the following entries:
+This document, if approved, requests IANA to two new entries to the "HTTP
+Authentication Schemes" Registry maintained at
+<[](https://www.iana.org/assignments/http-authschemes/http-authschemes.xhtml)>.
+Both entries have the Reference set to this document, and the Notes empty.
+The Authentication Scheme Name of the entries ate:
 
 * Signature
 
 * HMAC
-
-The reference for both is this document.
 
 ## TLS Keying Material Exporter Labels {#iana-exporter-label}
 
@@ -293,6 +296,6 @@ Reference:
 {:numbered="false"}
 
 The authors would like to thank many members of the IETF community, as this
-document is the fruit of many hallway conversations.
-
+document is the fruit of many hallway conversations. Ben Schwartz contributed
+ideas to this document.
 
