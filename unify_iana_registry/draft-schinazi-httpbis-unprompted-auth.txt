@@ -5,10 +5,10 @@
 HTTPBIS                                                      D. Schinazi
 Internet-Draft                                                Google LLC
 Intended status: Standards Track                               D. Oliver
-Expires: 28 July 2023                                   Guardian Project
+Expires: 6 August 2023                                  Guardian Project
                                                               J. Hoyland
                                                          Cloudflare Inc.
-                                                         24 January 2023
+                                                         2 February 2023
 
 
                      HTTP Unprompted Authentication
@@ -61,7 +61,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 28 July 2023.
+   This Internet-Draft will expire on 6 August 2023.
 
 Copyright Notice
 
@@ -292,7 +292,7 @@ Table of Contents
    <https://www.iana.org/assignments/http-authschemes/http-
    authschemes.xhtml>.  Both entries have the Reference set to this
    document, and the Notes empty.  The Authentication Scheme Name of the
-   entries ate:
+   entries are:
 
    *  Signature
 
