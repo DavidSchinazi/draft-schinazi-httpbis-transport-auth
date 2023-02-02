@@ -259,7 +259,7 @@ This document, if approved, requests IANA to two new entries to the "HTTP
 Authentication Schemes" Registry maintained at
 <[](https://www.iana.org/assignments/http-authschemes/http-authschemes.xhtml)>.
 Both entries have the Reference set to this document, and the Notes empty.
-The Authentication Scheme Name of the entries ate:
+The Authentication Scheme Name of the entries are:
 
 * Signature
 
