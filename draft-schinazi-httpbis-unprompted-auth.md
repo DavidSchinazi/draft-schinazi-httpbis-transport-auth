@@ -89,15 +89,16 @@ future work.
 {::boilerplate bcp14-tagged}
 
 This document uses the following terminology from {{Section 3 of
-!STRUCTURED-FIELDS=RFC8941}} to specify syntax and parsing: Integer, Token and
-Byte Sequence.
+!STRUCTURED-FIELDS=RFC8941}} to specify syntax and parsing: Integer and Byte
+Sequence.
 
 # Computing the Authentication Proof {#compute-proof}
 
-This document only defines Unprompted Authentication for uses of HTTP with TLS
-{{!TLS=RFC8446}}. This includes any use of HTTP over TLS as typically used for
-HTTP/2 {{H2}}, or HTTP/3 {{H3}} where the transport protocol uses TLS as its
-authentication and key exchange mechanism {{?QUIC-TLS=RFC9001}}.
+This document only defines the Signature and HMAC authentication schemes for
+uses of HTTP with TLS {{!TLS=RFC8446}}. This includes any use of HTTP over TLS
+as typically used for HTTP/2 {{H2}}, or HTTP/3 {{H3}} where the transport
+protocol uses TLS as its authentication and key exchange mechanism
+{{?QUIC-TLS=RFC9001}}.
 
 The user agent leverages a TLS keying material exporter {{!KEY-EXPORT=RFC5705}}
 to generate a nonce which can be signed using the user's key. The keying
@@ -111,8 +112,14 @@ generate a 32-byte key which is then used as a nonce.
 The "Unprompted-Authentication" header field allows a user agent to authenticate
 with an origin server. The authentication is scoped to the HTTP request
 associated with this header field. The value of the Unprompted-Authentication
-header field is a token which represents the HTTP Authentication Scheme;
-see {{schemes}}. This header field supports parameters.
+header field is a credentials object, as defined in {{Section 11.4 of HTTP}}.
+Credentials contain an authentication scheme followed by optional authentication
+parameters.
+
+# Authentication Parameters
+
+This specification defines the following authentication parameters, they can be
+used by the authentication schemes defined in {{schemes}}.
 
 ## The u Parameter {#parameter-u}
 
