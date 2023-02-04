@@ -1,0 +1,423 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2022-11-10T00:45:55.169412+00:00",
+  "repo": "DavidSchinazi/draft-schinazi-httpbis-transport-auth",
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    }
+  ],
+  "issues": [
+    {
+      "number": 1,
+      "id": "I_kwDOHoP9o85Nd8NL",
+      "title": "initial editorial comments",
+      "url": "https://github.com/DavidSchinazi/draft-schinazi-httpbis-transport-auth/issues/1",
+      "state": "CLOSED",
+      "author": "m4mb01t4l14n0",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Abstract: _... there is no existing way for the origin to share such a nonce without exposing the fact that they serve resources ..._\r\n\r\ns/they serve/it serves \r\n\r\nAlso, some might consider this a run-on sentence.  An abstract's brevity might condone such behavior, of course.\r\n\r\nSection 1: Here I think it's better to have shorter sentences. I support directly stating that non-probability is a key feature, but I feel that requires an explanation.  I don't have better wording yet - will consider and propose later.  I find the second paragraph a bit abrupt having just stated the reasons non-probability is useful.  There needs to be a caveat here, thus:  \"There are scenarios where servers may want to expose that authentication is required for access to specific resources.  This is left for future work.\"\r\n\r\nSection 5: _...HTTP intermediaries that support this specification will validate the authentication received from the client themselves, then let the upstream HTTP server using some other mechanism..._.\r\n\r\nincomplete sentence.  Likely \"...let the upstream HTTP server AUTHENTICATE THE CLIENT using some other mechanism.\"",
+      "createdAt": "2022-07-09T14:26:01Z",
+      "updatedAt": "2022-07-11T16:22:53Z",
+      "closedAt": "2022-07-11T16:22:53Z",
+      "comments": [
+        {
+          "author": "DavidSchinazi",
+          "authorAssociation": "OWNER",
+          "body": "Thanks! Fixed via 51404e94ab0180e6d15556af7d20a1e30388a6db",
+          "createdAt": "2022-07-11T16:22:53Z",
+          "updatedAt": "2022-07-11T16:22:53Z"
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "id": "I_kwDOHoP9o85OwoyS",
+      "title": "signature identifiers",
+      "url": "https://github.com/DavidSchinazi/draft-schinazi-httpbis-transport-auth/issues/2",
+      "state": "CLOSED",
+      "author": "martinthomson",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Why oh why would you want to use an OID?  There are many ways to identify signature algorithms, but OIDs are the worst.\r\n\r\nIf we're binding to TLS, maybe consider using TLS signature identifiers.  JWS also has some strings.",
+      "createdAt": "2022-07-28T19:16:29Z",
+      "updatedAt": "2022-10-13T18:25:20Z",
+      "closedAt": "2022-10-13T18:25:20Z",
+      "comments": []
+    },
+    {
+      "number": 3,
+      "id": "I_kwDOHoP9o85Ow05E",
+      "title": "Fix name",
+      "url": "https://github.com/DavidSchinazi/draft-schinazi-httpbis-transport-auth/issues/3",
+      "state": "CLOSED",
+      "author": "DavidSchinazi",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "The title \"HTTP Transport Authentication\" no longer matches what this does, we should fix it",
+      "createdAt": "2022-07-28T20:11:07Z",
+      "updatedAt": "2022-10-13T18:25:21Z",
+      "closedAt": "2022-10-13T18:25:21Z",
+      "comments": [
+        {
+          "author": "m4mb01t4l14n0",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Candidates:\r\n- Silent HTTP Client Authentication\r\n- Quiet HTTP Client Authentication\r\n- 0RTT HTTP Client Authentication\r\n\r\nIs the term \"client\" actually necessary?\r\n\r\n",
+          "createdAt": "2022-07-29T17:08:18Z",
+          "updatedAt": "2022-07-29T17:08:18Z"
+        },
+        {
+          "author": "DavidSchinazi",
+          "authorAssociation": "OWNER",
+          "body": "That's a good point, I don't think we need \"client\" in the name. A few more ideas:\r\n\r\n- HTTP Hidden Authentication\r\n- HTTP Masked Authentication",
+          "createdAt": "2022-08-01T15:47:13Z",
+          "updatedAt": "2022-08-01T15:47:13Z"
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "id": "I_kwDOHoP9o85Ow1iK",
+      "title": "Double-check security of reusing the signature key multiple times in one connection",
+      "url": "https://github.com/DavidSchinazi/draft-schinazi-httpbis-transport-auth/issues/4",
+      "state": "CLOSED",
+      "author": "DavidSchinazi",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "@jhoyla and @martinthomson have pointed out that there be dragons in reusing keys. We should check to see if we need to add a signature index or some other addition to the nonce to avoid reuse.",
+      "createdAt": "2022-07-28T20:13:54Z",
+      "updatedAt": "2022-10-13T18:25:21Z",
+      "closedAt": "2022-10-13T18:25:21Z",
+      "comments": [
+        {
+          "author": "jhoyla",
+          "authorAssociation": "NONE",
+          "body": "Maybe the right approach is to add an `opaque request_context<0..2^8-1>` field?",
+          "createdAt": "2022-07-28T20:17:23Z",
+          "updatedAt": "2022-07-28T20:18:30Z"
+        },
+        {
+          "author": "DavidSchinazi",
+          "authorAssociation": "OWNER",
+          "body": "@jhoyla can you elaborate on what the exact issue is? If the key and nonce are reused without changing anything else, what is the exact problem?",
+          "createdAt": "2022-07-28T20:22:18Z",
+          "updatedAt": "2022-07-28T20:22:18Z"
+        },
+        {
+          "author": "jhoyla",
+          "authorAssociation": "NONE",
+          "body": "I guess the threat model has to be a Person-In-Browser attacker, because we're assuming TLS is already defeated. \r\nOne issue would be if the key and nonce were reused with a different identity, for example if the first attempt was rejected / failed.\r\nThis can (in some contexts) be used for a key recovery attack, which would allow the attacker to possibly sign things they otherwise couldn't. \r\nThe other issue is that the identity is not bound to a single authentication. I don't think Frames have to cause an idempotent response from the server? It could be that (correctly) authenticating twice would have some side effect. A authentication might cause the server to take some action with a side effect \"send the money\" style.",
+          "createdAt": "2022-07-28T20:34:35Z",
+          "updatedAt": "2022-07-28T20:34:35Z"
+        },
+        {
+          "author": "DavidSchinazi",
+          "authorAssociation": "OWNER",
+          "body": "I see. Would adding the identity to the signed data be sufficient? (I'm happy to add a request context if needed but I want to understand the details)",
+          "createdAt": "2022-07-28T20:45:05Z",
+          "updatedAt": "2022-07-28T20:45:05Z"
+        },
+        {
+          "author": "jhoyla",
+          "authorAssociation": "NONE",
+          "body": "I don't think so, because it doesn't stop an in-browser attacker replaying the credentials to try and perform some action twice. Also in the Intermediary case, I was wondering if we could structure it such that the intermediary shares the exported key with the server, which allows the server to validate the credential. The goal would be that the server doesn't have to trust that the intermediary isn't making stuff up. I'm not sure if it's sensible or secure, because even though the shared key is independent from any of the other TLS keys shared between the client and intermediary, maybe it's possible for the intermediary to lie about the key and thus change the meaning of the message. \r\n(The connection here being that in the case of origin validation with an intermediary, we don't want the intermediary to be able to replay requests.) \r\nThe more I think about the signature case the closer it seems to get to a version of EAs that allows client-initiation. I need to sit down and think a bit more about what we can learn from the security model of EAs. One question that springs to mind is \"do we need a `Finished` message / MAC here?\" \r\nIf not, why do we include it in EAs? \r\nSorry, I'm starting to ramble. I'll leave it there.",
+          "createdAt": "2022-07-29T13:35:57Z",
+          "updatedAt": "2022-07-29T13:35:57Z"
+        },
+        {
+          "author": "m4mb01t4l14n0",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I have not looked at the code in a long time (SSL_export_keying_material). Do repeated calls to the key exporter - on the same TLS connection - generate the same value?  SCRATCH THAT, of course not.",
+          "createdAt": "2022-07-29T16:49:32Z",
+          "updatedAt": "2022-07-29T16:59:36Z"
+        },
+        {
+          "author": "jhoyla",
+          "authorAssociation": "NONE",
+          "body": "According to RFC 8446 it should, unless there has been a resumption or a rekeying. ",
+          "createdAt": "2022-07-29T17:16:16Z",
+          "updatedAt": "2022-07-29T17:16:16Z"
+        },
+        {
+          "author": "DavidSchinazi",
+          "authorAssociation": "OWNER",
+          "body": "To clarify, in TLS 1.3 repeated calls to the key exporter with the same parameters (label, context, length) will always generate the same value. In TLS 1.2 there are dragons when it comes to resumption and rekey as Jonathan points out but we can add text explaining what not to do.\r\n\r\nI'm not convinced that an in-browser attacker is part of the threat model here, but I'm not opposed to adding a counter to the signed data in addition to the nonce to solve that attack.\r\n\r\nRegarding intermediaries, I like the idea of having the intermediary share the nonce with the backend. I'd be inclined to mention both options (sharing the nonce and having the intermediary check auth) in that section, but I'd rather not define how that's done until someone has a use-case for it.\r\n\r\nFrom looking at TLS exported authenticators (EA) it's not clear to me what purpose the Finished message serves there.",
+          "createdAt": "2022-08-03T15:22:47Z",
+          "updatedAt": "2022-08-03T15:22:47Z"
+        },
+        {
+          "author": "DavidSchinazi",
+          "authorAssociation": "OWNER",
+          "body": "I had a quick chat with @grittygrease and @davidben about this and the conclusion was that the Finished message in EA doesn't bind any more secrets together but it allows reusing the security proofs from TLS.",
+          "createdAt": "2022-08-03T20:03:41Z",
+          "updatedAt": "2022-08-03T20:03:41Z"
+        },
+        {
+          "author": "m4mb01t4l14n0",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Ha! Now realizing I said the opposite of what I meant in the earlier comment.",
+          "createdAt": "2022-08-04T15:31:06Z",
+          "updatedAt": "2022-08-04T15:31:06Z"
+        },
+        {
+          "author": "DavidSchinazi",
+          "authorAssociation": "OWNER",
+          "body": "@jhoyla and I discussed this offline today. @jhoyla had isolated two issues:\r\n1. key reuse with AEAD -- it turns that we're only reusing keys for signatures here so there is no issue\r\n2. compromise across requests by an in-browser attacker -- we decided that this attack wan't interesting because such an attacker could also read the private key. Worth adding to security considerations though",
+          "createdAt": "2022-10-07T23:52:30Z",
+          "updatedAt": "2022-10-07T23:52:30Z"
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "id": "I_kwDOHoP9o85PNFGv",
+      "title": "Support for DTLS?",
+      "url": "https://github.com/DavidSchinazi/draft-schinazi-httpbis-transport-auth/issues/5",
+      "state": "CLOSED",
+      "author": "m4mb01t4l14n0",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "I note that OpenSSL's documentation defines [openssl_export_keying_materials](https://www.openssl.org/docs/manmaster/man3/SSL_export_keying_material.html) for both TLS and DTLS.  Our current draft has text that limits the scope to TCP and HTTP (and therefore TLS).  Should we consider including DTLS as well?  Or is there no valid use case? ",
+      "createdAt": "2022-08-04T15:35:41Z",
+      "updatedAt": "2022-08-15T17:58:38Z",
+      "closedAt": "2022-08-15T17:58:37Z",
+      "comments": [
+        {
+          "author": "DavidSchinazi",
+          "authorAssociation": "OWNER",
+          "body": "I don't have a use-case for DTLS, especially now that we have QUIC. I'd suggest considering DTLS out of scope and building something specific to HTTP.",
+          "createdAt": "2022-08-05T01:14:42Z",
+          "updatedAt": "2022-08-05T01:14:42Z"
+        },
+        {
+          "author": "m4mb01t4l14n0",
+          "authorAssociation": "COLLABORATOR",
+          "body": "closing this",
+          "createdAt": "2022-08-15T17:58:37Z",
+          "updatedAt": "2022-08-15T17:58:37Z"
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "id": "I_kwDOHoP9o85T825I",
+      "title": "Require TLS 1.3 or TLS 1.2 with Extended Master Secret",
+      "url": "https://github.com/DavidSchinazi/draft-schinazi-httpbis-transport-auth/issues/7",
+      "state": "OPEN",
+      "author": "DavidSchinazi",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "From Ilari Liusvaara on the [list](https://lists.w3.org/Archives/Public/ietf-http-wg/2022OctDec/0027.html):\r\n\r\n> I do not see requirement for TLS 1.3 or Extended Master Secret anywhere. It is not safe to use TLS Exporters for authentication otherwise.",
+      "createdAt": "2022-10-13T21:45:36Z",
+      "updatedAt": "2022-10-13T21:45:36Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 8,
+      "id": "I_kwDOHoP9o85T83hx",
+      "title": "Signature hash algorithm is ambiguous",
+      "url": "https://github.com/DavidSchinazi/draft-schinazi-httpbis-transport-auth/issues/8",
+      "state": "OPEN",
+      "author": "DavidSchinazi",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "From Ilari Liusvaara on the [list](https://lists.w3.org/Archives/Public/ietf-http-wg/2022OctDec/0027.html):\r\n\r\n> There is no requirement to include hash algorithm in signatures. There are TLS signature algorithms that mean totally different things depending on hash function, and more of those could appear in the future. E.g, signatures 7 and 8 already have double meaning (EdDSA [hash 8] and some Chinese stuff [hash 7]).\r\n\r\nFrom @nharper on the [list](https://lists.w3.org/Archives/Public/ietf-http-wg/2022OctDec/0028.html):\r\n\r\n> I agree with Ilari - do not use the TLS SignatureAlgorithm and HashAlgorithm registries that were orphaned by RFC 8447. For (asymmetric) signatures, you could use the 16-bit TLS SignatureScheme registry (https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml#tls-signaturescheme).",
+      "createdAt": "2022-10-13T21:48:58Z",
+      "updatedAt": "2022-10-14T01:04:15Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "body": "Maybe also consider [JWA](https://datatracker.ietf.org/doc/html/rfc7518#section-3) for identification.  That's not perfect, because of the \"none\" thing, but it might be a better fit.\r\n\r\nThe TLS schemes are generally OK provided that you only use the recommended ones (of which there aren't many).",
+          "createdAt": "2022-10-14T00:09:01Z",
+          "updatedAt": "2022-10-14T00:09:01Z"
+        },
+        {
+          "author": "DavidSchinazi",
+          "authorAssociation": "OWNER",
+          "body": "I don't love JWA since [it doesn't currently have an entry for Ed25519](https://www.iana.org/assignments/jose/jose.xhtml#web-signature-encryption-algorithms), but using TLS SignatureScheme with a requirement to only use the recommended ones sounds good to me.",
+          "createdAt": "2022-10-14T01:03:22Z",
+          "updatedAt": "2022-10-14T01:04:15Z"
+        }
+      ]
+    },
+    {
+      "number": 9,
+      "id": "I_kwDOHoP9o85T83rW",
+      "title": "Consider contextualizing signatures",
+      "url": "https://github.com/DavidSchinazi/draft-schinazi-httpbis-transport-auth/issues/9",
+      "state": "OPEN",
+      "author": "DavidSchinazi",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "From Ilari Liusvaara on the [list](https://lists.w3.org/Archives/Public/ietf-http-wg/2022OctDec/0027.html):\r\n\r\n> The signatures do not appear to be contextualized in any way, which is questionable. For example, one could use the same contextualization mechanism that TLS 1.3 uses (which prepends 64 spaces, a context label and NUL [one zero octet]).",
+      "createdAt": "2022-10-13T21:49:48Z",
+      "updatedAt": "2022-10-14T00:10:37Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "body": "I think that I might disagree with Ilari here for this application.  Key separation is probably a better model to employ here, though as soon as someone even hints that they might want to share client certificate keys and these keys then this sort of protection probably makes sense.",
+          "createdAt": "2022-10-14T00:10:37Z",
+          "updatedAt": "2022-10-14T00:10:37Z"
+        }
+      ]
+    },
+    {
+      "number": 10,
+      "id": "I_kwDOHoP9o85T83zg",
+      "title": "Discuss security properties of keys",
+      "url": "https://github.com/DavidSchinazi/draft-schinazi-httpbis-transport-auth/issues/10",
+      "state": "OPEN",
+      "author": "DavidSchinazi",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "From @nharper on the [list](https://lists.w3.org/Archives/Public/ietf-http-wg/2022OctDec/0028.html):\r\n\r\n> The draft is very light on details about where the user's key (private or symmetric) comes from. I assume that key generation/distribution/registration/etc is out of scope for this draft, but the draft should address the security properties expected of said key, e.g. can a key be used for Unprompted Authentication and another use?",
+      "createdAt": "2022-10-13T21:50:29Z",
+      "updatedAt": "2022-10-13T21:50:29Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 11,
+      "id": "I_kwDOHoP9o85T836b",
+      "title": "Describe server handling",
+      "url": "https://github.com/DavidSchinazi/draft-schinazi-httpbis-transport-auth/issues/11",
+      "state": "OPEN",
+      "author": "DavidSchinazi",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "From @nharper on the [list](https://lists.w3.org/Archives/Public/ietf-http-wg/2022OctDec/0028.html):\r\n\r\n> There's no mention of how a server should process this header and respond to it. Given that the purpose is to be unprobable, the draft should probably say something to the effect of \"if a server receives a header it is unable to validate, it should process the request as if the header were not present\". The security considerations should also discuss ways that a server might inadvertently reveal that it serves resources protected by this mechanism.",
+      "createdAt": "2022-10-13T21:50:53Z",
+      "updatedAt": "2022-10-13T21:50:53Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 12,
+      "id": "I_kwDOHoP9o85VwP19",
+      "title": "SF: Make the signature the primary value",
+      "url": "https://github.com/DavidSchinazi/draft-schinazi-httpbis-transport-auth/issues/12",
+      "state": "OPEN",
+      "author": "martinthomson",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "In many cases, the choice of algorithm, the signature scheme, the authentication mode, and other properties are parameters that could be omitted.  That suggests that this is not a token, but SF-binary instead.",
+      "createdAt": "2022-11-07T17:18:12Z",
+      "updatedAt": "2022-11-08T08:30:43Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "DavidSchinazi",
+          "authorAssociation": "OWNER",
+          "body": "That sounds reasonable to me",
+          "createdAt": "2022-11-08T08:30:42Z",
+          "updatedAt": "2022-11-08T08:30:42Z"
+        }
+      ]
+    },
+    {
+      "number": 13,
+      "id": "I_kwDOHoP9o85VwXGY",
+      "title": "feedback from IETF115",
+      "url": "https://github.com/DavidSchinazi/draft-schinazi-httpbis-transport-auth/issues/13",
+      "state": "OPEN",
+      "author": "m4mb01t4l14n0",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Following IETF115 presentation: Some very good questions - \"comparisons to available techniques\" - teased out just by naming the draft differently? (this could have all come out at IETF114 maybe)\r\n\r\nNeed to have answers for the difference between this approach and (a) token-binding (is this only TLS 1.3?), (b) exported authenticators.\r\n\r\nIssue raised (paraphrased): why is this useful if you already have lots of information about the user provisioned out-of-band?\r\n",
+      "createdAt": "2022-11-07T17:45:17Z",
+      "updatedAt": "2022-11-07T17:45:17Z",
+      "closedAt": null,
+      "comments": []
+    }
+  ],
+  "pulls": [
+    {
+      "number": 6,
+      "id": "PR_kwDOHoP9o85AbLGE",
+      "title": "Output of offline discussion",
+      "url": "https://github.com/DavidSchinazi/draft-schinazi-httpbis-transport-auth/pull/6",
+      "state": "MERGED",
+      "author": "DavidSchinazi",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes #2 \r\nFixes #3 \r\nFixes #4 ",
+      "createdAt": "2022-10-07T23:50:21Z",
+      "updatedAt": "2022-10-13T18:25:23Z",
+      "baseRepository": "DavidSchinazi/draft-schinazi-httpbis-transport-auth",
+      "baseRefName": "main",
+      "baseRefOid": "d4d3002b34f5b00a9f5f78b98587ddd5e3c01c17",
+      "headRepository": "DavidSchinazi/draft-schinazi-httpbis-transport-auth",
+      "headRefName": "20221007",
+      "headRefOid": "d4c345b336f0ccd356293ec35e9176ebc6480950",
+      "closedAt": "2022-10-13T18:25:19Z",
+      "mergedAt": "2022-10-13T18:25:19Z",
+      "mergedBy": "DavidSchinazi",
+      "mergeCommit": {
+        "oid": "9890d38c1a78d81b8c93177b7f7b376e17965410"
+      },
+      "comments": [],
+      "reviews": []
+    }
+  ]
+}
